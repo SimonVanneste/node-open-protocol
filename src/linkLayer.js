@@ -26,6 +26,7 @@ const MIDSerializer = require("./MIDSerializer");
 const constants = require("./constants.json");
 
 var debug = util.debuglog('open-protocol');
+var debugInfo = util.debuglog('open-protocol-info');
 
 const POSITIVE_ACK = 9997;
 const NEGATIVE_ACK = 9998;
@@ -56,7 +57,7 @@ class LinkLayer extends Duplex {
 
         if (opts.stream === undefined) {
             debug("LinkLayer constructor err-socket-undefined");
-            throw new Error("[LinkLayer] Socket is undefined");            
+            throw new Error("[LinkLayer] Socket is undefined");
         }
 
         //Create instances of manipulators
@@ -207,7 +208,7 @@ class LinkLayer extends Duplex {
 
     _onDataOpParser(data) {
         debug("LinkLayer _onDataOpParser", data);
-        
+
         let duplicateMsg = false;
 
         if (this.linkLayerActive) {
@@ -330,7 +331,7 @@ class LinkLayer extends Duplex {
     }
 
     _write(msg, encoding, callback) {
-        debug("LinkLayer _write", msg);
+        debugInfo("LinkLayer _write", msg);
 
         this.callbackWrite = callback;
         this.resentTimes = 0;
@@ -369,7 +370,7 @@ class LinkLayer extends Duplex {
 
         clearTimeout(this.timer);
 
-        function destroyStream(stream){
+        function destroyStream(stream) {
             // handles Node versions older than 8.x
             if (typeof stream.destroy === 'function') {
                 stream.destroy();
@@ -438,7 +439,7 @@ class LinkLayer extends Duplex {
                 this.callbackWrite = undefined;
 
             } else {
-                
+
                 debug('LinkLayer _receiverLinkLayer err-incorrect_fields_MID', this.message.mid, this.sequenceNumber);
                 this.emit("error", err);
             }

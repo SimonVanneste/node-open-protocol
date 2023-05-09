@@ -1,5 +1,5 @@
 {
-    "communicationStop":{
+    "communicationStop": {
         "request": 3
     },
     "selectPset": {
@@ -13,6 +13,9 @@
     },
     "parameterUserSetDownload": {
         "request": 25
+    },
+    "psetDataModifyRequest": {
+        "request": 29
     },
     "selectJob": {
         "request": 38
@@ -97,7 +100,7 @@
     },
     "resetDigitalInputFunction": {
         "request": 225
-    },    
+    },
     "userDataDownload": {
         "request": 240,
         "reply": 242
