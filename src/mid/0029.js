@@ -47,6 +47,7 @@ const serializerField = helpers.serializerField;
 const serializerKey = helpers.serializerKey;
 
 function parser(msg, opts, cb) {
+    let status = true;
 
     let buffer = msg.payload;
     msg.payload = {};
@@ -60,7 +61,7 @@ function parser(msg, opts, cb) {
     switch (msg.revision) {
 
         case 1:
-            processKey(msg, buffer, "parameterSetID", 1, 2, position, cb) &&
+            status = processKey(msg, buffer, "parameterSetID", 1, 2, position, cb) &&
                 processParser(msg, buffer, "parameterSetID", "number", 3, position, cb) &&
                 processKey(msg, buffer, "parameterSetName", 2, 2, position, cb) &&
                 processParser(msg, buffer, "parameterSetName", "string", 25, position, cb) &&
@@ -95,8 +96,17 @@ function parser(msg, opts, cb) {
                 processKey(msg, buffer, "adapterID", 17, 2, position, cb) &&
                 processParser(msg, buffer, "adapterID", "number", 3, position, cb) &&
                 processKey(msg, buffer, "adapterLength", 18, 2, position, cb) &&
-                processParser(msg, buffer, "adapterLength", "number", 3, position, cb) &&
-                cb(null, msg);
+                processParser(msg, buffer, "adapterLength", "number", 3, position, cb);
+
+            if (status) {
+                msg.payload.torqueMin = (msg.payload.torqueMin / 100);
+                msg.payload.torqueMax = (msg.payload.torqueMax / 100);
+                msg.payload.torqueFinalTarget = (msg.payload.torqueFinalTarget / 100);
+                msg.payload.torqueThreshold = (msg.payload.torqueThreshold / 100);
+                msg.payload.angleThreshold = (msg.payload.angleThreshold / 100);
+
+                cb(null, msg)
+            }
             break;
 
         default:
@@ -129,6 +139,13 @@ function serializer(msg, opts, cb) {
             if (!statusprocess) {
                 return;
             }
+
+            msg.payload.torque = Math.trunc(msg.payload.torque * 100);
+            msg.payload.torqueFinalTarget = Math.trunc(msg.payload.torqueFinalTarget * 100);
+            msg.payload.torqueMax = Math.trunc(msg.payload.torqueMax * 100);
+            msg.payload.torqueMin = Math.trunc(msg.payload.torqueMin * 100);
+            msg.payload.torqueThreshold = Math.trunc(msg.payload.torqueThreshold * 100);
+            msg.payload.angleThreshold = Math.trunc(msg.payload.angleThreshold * 100);
 
             statusprocess =
                 serializerField(msg, buf, "adapterLength", "number", 3, position, cb) &&
