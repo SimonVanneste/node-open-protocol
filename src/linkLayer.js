@@ -354,7 +354,11 @@ class LinkLayer extends Duplex {
             });
         }
 
-        this.midSerializer.write(msg);
+        this.midSerializer.write(msg, undefined, (error) => {
+            if (error) {
+                this._onErrorSerializer(error);
+            }
+        });
     }
 
     _read(size) {
