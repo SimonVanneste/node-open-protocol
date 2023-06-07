@@ -464,7 +464,7 @@ function parser(msg, opts, cb) {
                 msg.payload.tighteningStatus = checkOK(msg.payload.tighteningStatus);
 
                 msg.payload._batchStatus = msg.payload.batchStatus;
-                msg.payload.batchStatus = checkOK(msg.payload.batchStatus);
+                msg.payload.batchStatus = checkBatchStatus(msg.payload.batchStatus);
 
                 cb(null, msg);
             }
@@ -544,7 +544,7 @@ function parser(msg, opts, cb) {
                 msg.payload.tighteningStatus = checkOK(msg.payload.tighteningStatus);
 
                 msg.payload._batchStatus = msg.payload.batchStatus;
-                msg.payload.batchStatus = checkOK(msg.payload.batchStatus);
+                msg.payload.batchStatus = checkBatchStatus(msg.payload.batchStatus);
 
                 cb(null, msg);
             }
@@ -766,7 +766,7 @@ function serializer(msg, opts, cb) {
             msg.payload.rundownAngleStatus = serializerStatus(msg.payload.rundownAngleStatus);
             msg.payload.angleStatus = serializerStatus(msg.payload.angleStatus);
             msg.payload.torqueStatus = serializerStatus(msg.payload.torqueStatus);
-            msg.payload.batchStatus = serializerStatus(msg.payload.batchStatus);
+            msg.payload.batchStatus = serializeBatchStatus(msg.payload.batchStatus);
             msg.payload.tighteningStatus = serializerStatus(msg.payload.tighteningStatus);
 
             msg.payload.strategy = serializerOptions("serializer-strategy", msg.payload.strategy);
@@ -883,7 +883,7 @@ function serializer(msg, opts, cb) {
 
             msg.payload.angleStatus = serializerStatus(msg.payload.angleStatus);
             msg.payload.torqueStatus = serializerStatus(msg.payload.torqueStatus);
-            msg.payload.batchStatus = serializerStatus(msg.payload.batchStatus);
+            msg.payload.batchStatus = serializeBatchStatus(msg.payload.batchStatus);
             msg.payload.tighteningStatus = serializerStatus(msg.payload.tighteningStatus);
 
             msg.payload.torque = Math.trunc(msg.payload.torque * 100);
@@ -981,6 +981,41 @@ function checkOK(value) {
         default:
             return "NOT USED";
     }
+}
+
+function checkBatchStatus(value) {
+    switch (value) {
+        case 0:
+            return "NOK";
+        case 1:
+            return "OK";
+        case 2:
+            return "NOT USED";
+        case 3:
+            return "RUNNING";
+    }
+}
+
+function serializeBatchStatus(value) {
+
+    if(typeof value !== "string"){
+        return value;
+    }
+    
+    value = value.toUpperCase();
+
+    switch(value) {
+        case "NOK":
+            return 0;
+        case "OK":
+            return 1;
+        case "NOT USED":
+            return 2;
+        case "RUNNING":
+            return 3;
+    }
+
+    return value;
 }
 
 function serializerStatus(value) {
